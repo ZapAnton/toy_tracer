@@ -26,7 +26,7 @@ fn main() -> io::Result<()> {
 
             let ib = (255.99 * b) as i32;
 
-            write!(&mut output_file, "{} {} {}\n", ir, ig, ib)?;
+            writeln!(&mut output_file, "{} {} {}", ir, ig, ib)?;
         }
     }
 
