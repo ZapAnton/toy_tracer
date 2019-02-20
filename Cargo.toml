@@ -1,0 +1,7 @@
+[package]
+name = "toy_tracer"
+version = "0.1.0"
+authors = ["zapolsky"]
+edition = "2018"
+
+[dependencies]
