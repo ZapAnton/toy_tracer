@@ -1,4 +1,5 @@
 mod gvec;
+mod ray;
 
 use std::{
     fs::File,
