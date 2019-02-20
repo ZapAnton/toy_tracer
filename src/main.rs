@@ -20,11 +20,11 @@ fn main() -> io::Result<()> {
         for i in 0..NX {
             let col = Gvec::new(i as f32 / NX as f32, j as f32 / NY as f32, 0.2);
 
-            let ir = (255.99 * col.e[0]) as i32;
+            let ir = (255.99 * col.0) as i32;
 
-            let ig = (255.99 * col.e[1]) as i32;
+            let ig = (255.99 * col.1) as i32;
 
-            let ib = (255.99 * col.e[2]) as i32;
+            let ib = (255.99 * col.2) as i32;
 
             writeln!(&mut output_file, "{} {} {}", ir, ig, ib)?;
         }
