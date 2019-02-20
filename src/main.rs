@@ -1,7 +1,11 @@
+mod gvec;
+
 use std::{
     fs::File,
     io::{self, BufWriter, Write},
 };
+
+use gvec::Gvec;
 
 fn main() -> io::Result<()> {
     let nx = 200;
@@ -14,17 +18,13 @@ fn main() -> io::Result<()> {
 
     for j in (0..ny).rev() {
         for i in 0..nx {
-            let r = i as f32 / nx as f32;
+            let col = Gvec::new(i as f32 / nx as f32, j as f32 / ny as f32, 0.2);
 
-            let g = j as f32 / ny as f32;
+            let ir = (255.99 * col.e[0]) as i32;
 
-            let b = 0.2;
+            let ig = (255.99 * col.e[1]) as i32;
 
-            let ir = (255.99 * r) as i32;
-
-            let ig = (255.99 * g) as i32;
-
-            let ib = (255.99 * b) as i32;
+            let ib = (255.99 * col.e[2]) as i32;
 
             writeln!(&mut output_file, "{} {} {}", ir, ig, ib)?;
         }
