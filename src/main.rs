@@ -18,7 +18,29 @@ const HORIZONTAL: Gvec = Gvec(4.0, 0.0, 0.0);
 const VERTICAL: Gvec = Gvec(0.0, 2.0, 0.0);
 const ORIGIN: Gvec = Gvec(0.0, 0.0, 0.0);
 
+fn dot(v1: &Gvec, v2: &Gvec) -> f32 {
+    v1.0 * v2.0 + v1.1 * v2.1 + v1.2 * v2.2
+}
+
+fn hits_sphere(center: &Gvec, radius: f32, ray: &Ray) -> bool {
+    let oc = ray.origin.clone() - center.clone();
+
+    let a = dot(&ray.direction, &ray.direction);
+
+    let b = 2.0 * dot(&oc, &ray.direction);
+
+    let c = dot(&oc, &oc) - radius.powi(2);
+
+    let discriminant = b.powi(2) - 4.0 * a * c;
+
+    discriminant.is_sign_positive()
+}
+
 fn color(ray: &Ray) -> Gvec {
+    if hits_sphere(&Gvec(0.0, 0.0, -1.0), 0.5, ray) {
+        return Gvec(1.0, 0.0, 0.0);
+    }
+
     let unit_direction = ray.direction.unit();
 
     let t = 0.5 * (unit_direction.1 + 1.0);

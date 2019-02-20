@@ -1,5 +1,6 @@
-use std::ops::{Add, Div, Mul};
+use std::ops::{Add, Div, Mul, Sub};
 
+#[derive(Clone)]
 pub struct Gvec(pub f32, pub f32, pub f32);
 
 impl Gvec {
@@ -8,7 +9,7 @@ impl Gvec {
     }
 
     pub fn unit(&self) -> Self {
-        self / self.len()
+        self.clone() / self.len()
     }
 }
 
@@ -20,7 +21,16 @@ impl Add for Gvec {
     }
 }
 
-impl Div<f32> for &Gvec {
+impl Sub for Gvec {
+
+    type Output = Gvec;
+
+    fn sub(self, other: Self) -> Self::Output {
+        Gvec(self.0 - other.0, self.1 - other.1, self.2 - other.2)
+    }
+}
+
+impl Div<f32> for Gvec {
     type Output = Gvec;
 
     fn div(self, rhs: f32) -> Self::Output {
