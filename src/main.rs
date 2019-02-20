@@ -7,10 +7,24 @@ use std::{
 };
 
 use gvec::Gvec;
+use ray::Ray;
+
+const OUTPUT_FILE_PATH: &str = "out/test.ppm";
 
 const NX: i32 = 200;
 const NY: i32 = 100;
-const OUTPUT_FILE_PATH: &str = "out/test.ppm";
+const LOWER_LEFT_CORNER: Gvec = Gvec(-2.0, -1.0, -1.0);
+const HORIZONTAL: Gvec = Gvec(4.0, 0.0, 0.0);
+const VERTICAL: Gvec = Gvec(0.0, 2.0, 0.0);
+const ORIGIN: Gvec = Gvec(0.0, 0.0, 0.0);
+
+fn color(ray: &Ray) -> Gvec {
+    let unit_direction = ray.direction.unit();
+
+    let t = 0.5 * (unit_direction.1 + 1.0);
+
+    (1.0 - t) * Gvec(1.0, 1.0, 1.0) + t * Gvec(0.5, 0.7, 1.0)
+}
 
 fn main() -> io::Result<()> {
     let mut output_file = BufWriter::new(File::create(OUTPUT_FILE_PATH)?);
@@ -19,7 +33,13 @@ fn main() -> io::Result<()> {
 
     for j in (0..NY).rev() {
         for i in 0..NX {
-            let col = Gvec::new(i as f32 / NX as f32, j as f32 / NY as f32, 0.2);
+            let u = i as f32 / NX as f32;
+
+            let v = j as f32 / NY as f32;
+
+            let ray = Ray::new(ORIGIN, LOWER_LEFT_CORNER + u * HORIZONTAL + v * VERTICAL);
+
+            let col = color(&ray);
 
             let ir = (255.99 * col.0) as i32;
 

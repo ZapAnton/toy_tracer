@@ -1,9 +1,14 @@
-use std::ops::{Add, Mul};
+use std::ops::{Add, Div, Mul};
+
 pub struct Gvec(pub f32, pub f32, pub f32);
 
 impl Gvec {
-    pub fn new(e0: f32, e1: f32, e2: f32) -> Self {
-        Self(e0, e1, e2)
+    pub fn len(&self) -> f32 {
+        (self.0.powi(2) + self.1.powi(2) + self.2.powi(2)).sqrt()
+    }
+
+    pub fn unit(&self) -> Self {
+        self / self.len()
     }
 }
 
@@ -15,11 +20,23 @@ impl Add for Gvec {
     }
 }
 
+impl Div<f32> for &Gvec {
+    type Output = Gvec;
+
+    fn div(self, rhs: f32) -> Self::Output {
+        if rhs == 0.0 {
+            panic!("Cannot divide by zero");
+        }
+
+        Gvec(self.0 / rhs, self.1 / rhs, self.2 / rhs)
+    }
+}
+
 impl Mul<f32> for Gvec {
     type Output = Gvec;
 
     fn mul(self, rhs: f32) -> Self::Output {
-        Self(self.0 * rhs, self.1 * rhs, self.2 * rhs)
+        Gvec(self.0 * rhs, self.1 * rhs, self.2 * rhs)
     }
 }
 
