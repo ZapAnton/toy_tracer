@@ -7,18 +7,18 @@ use std::{
 
 use gvec::Gvec;
 
+const NX: i32 = 200;
+const NY: i32 = 100;
+const OUTPUT_FILE_PATH: &str = "out/test.ppm";
+
 fn main() -> io::Result<()> {
-    let nx = 200;
+    let mut output_file = BufWriter::new(File::create(OUTPUT_FILE_PATH)?);
 
-    let ny = 100;
+    write!(&mut output_file, "P3\n{} {}\n255\n", NX, NY)?;
 
-    let mut output_file = BufWriter::new(File::create("test.ppm")?);
-
-    write!(&mut output_file, "P3\n{} {}\n255\n", nx, ny)?;
-
-    for j in (0..ny).rev() {
-        for i in 0..nx {
-            let col = Gvec::new(i as f32 / nx as f32, j as f32 / ny as f32, 0.2);
+    for j in (0..NY).rev() {
+        for i in 0..NX {
+            let col = Gvec::new(i as f32 / NX as f32, j as f32 / NY as f32, 0.2);
 
             let ir = (255.99 * col.e[0]) as i32;
 
