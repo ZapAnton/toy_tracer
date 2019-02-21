@@ -10,7 +10,7 @@ impl Ray {
         Self { origin, direction }
     }
 
-    pub fn point_at_parameter(self, t: f32) -> Gvec {
-        self.origin + t * self.direction
+    pub fn point_at_parameter(&self, t: f32) -> Gvec {
+        self.origin.clone() + t * self.direction.clone()
     }
 }

@@ -22,7 +22,7 @@ fn dot(v1: &Gvec, v2: &Gvec) -> f32 {
     v1.0 * v2.0 + v1.1 * v2.1 + v1.2 * v2.2
 }
 
-fn hits_sphere(center: &Gvec, radius: f32, ray: &Ray) -> bool {
+fn sphere_hit_point(center: &Gvec, radius: f32, ray: &Ray) -> f32 {
     let oc = ray.origin.clone() - center.clone();
 
     let a = dot(&ray.direction, &ray.direction);
@@ -33,12 +33,20 @@ fn hits_sphere(center: &Gvec, radius: f32, ray: &Ray) -> bool {
 
     let discriminant = b.powi(2) - 4.0 * a * c;
 
-    discriminant.is_sign_positive()
+    if discriminant.is_sign_negative() {
+        -1.0
+    } else {
+        (-b - discriminant.sqrt()) / (2.0 * a)
+    }
 }
 
 fn color(ray: &Ray) -> Gvec {
-    if hits_sphere(&Gvec(0.0, 0.0, -1.0), 0.5, ray) {
-        return Gvec(1.0, 0.0, 0.0);
+    let hit_point = sphere_hit_point(&Gvec(0.0, 0.0, -1.0), 0.5, ray);
+
+    if hit_point.is_sign_positive() {
+        let n = (ray.point_at_parameter(hit_point) - Gvec(0.0, 0.0, -1.0)).unit();
+
+        return 0.5 * Gvec(n.0 + 1.0, n.1 + 1.0, n.2 + 1.0);
     }
 
     let unit_direction = ray.direction.unit();
