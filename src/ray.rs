@@ -11,6 +11,6 @@ impl Ray {
     }
 
     pub fn point_at_parameter(&self, t: f32) -> Gvec {
-        self.origin.clone() + t * self.direction.clone()
+        self.origin + t * self.direction
     }
 }

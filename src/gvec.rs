@@ -1,15 +1,15 @@
 use std::ops::{Add, Div, Mul, Sub};
 
-#[derive(Clone)]
+#[derive(Clone, Copy)]
 pub struct Gvec(pub f32, pub f32, pub f32);
 
 impl Gvec {
-    pub fn length(&self) -> f32 {
+    pub fn length(self) -> f32 {
         (self.0.powi(2) + self.1.powi(2) + self.2.powi(2)).sqrt()
     }
 
-    pub fn unit(&self) -> Self {
-        self.clone() / self.length()
+    pub fn unit(self) -> Self {
+        self / self.length()
     }
 }
 
