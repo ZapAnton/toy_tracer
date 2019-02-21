@@ -4,12 +4,12 @@ use std::ops::{Add, Div, Mul, Sub};
 pub struct Gvec(pub f32, pub f32, pub f32);
 
 impl Gvec {
-    pub fn len(&self) -> f32 {
+    pub fn length(&self) -> f32 {
         (self.0.powi(2) + self.1.powi(2) + self.2.powi(2)).sqrt()
     }
 
     pub fn unit(&self) -> Self {
-        self.clone() / self.len()
+        self.clone() / self.length()
     }
 }
 
@@ -22,7 +22,6 @@ impl Add for Gvec {
 }
 
 impl Sub for Gvec {
-
     type Output = Gvec;
 
     fn sub(self, other: Self) -> Self::Output {
