@@ -1,4 +1,5 @@
 use crate::{dot, gvec::Gvec, ray::Ray, HitRecord, Hitable};
+use std::borrow::Cow;
 
 pub struct Sphere<'a> {
     pub radius: f32,
@@ -31,7 +32,12 @@ impl<'a> Hitable for Sphere<'a> {
 
                 let normal = (&p - self.center) / self.radius;
 
-                return Some(HitRecord::new(true, temp, p, normal));
+                return Some(HitRecord::new(
+                    true,
+                    temp,
+                    Cow::Owned(p),
+                    Cow::Owned(normal),
+                ));
             }
 
             let temp = (-b + discriminant.sqrt()) / a;
@@ -41,7 +47,12 @@ impl<'a> Hitable for Sphere<'a> {
 
                 let normal = (&p - self.center) / self.radius;
 
-                return Some(HitRecord::new(true, temp, p, normal));
+                return Some(HitRecord::new(
+                    true,
+                    temp,
+                    Cow::Owned(p),
+                    Cow::Owned(normal),
+                ));
             }
         }
 

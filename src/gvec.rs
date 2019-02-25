@@ -1,5 +1,6 @@
 use std::ops::{Add, Div, Mul, Sub};
 
+#[derive(Clone)]
 pub struct Gvec(pub f32, pub f32, pub f32);
 
 impl Gvec {

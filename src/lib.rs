@@ -4,20 +4,21 @@ pub mod sphere;
 
 use gvec::Gvec;
 use ray::Ray;
+use std::borrow::Cow;
 
-pub struct HitRecord {
+pub struct HitRecord<'a> {
     pub is_hit: bool,
     pub t: f32,
-    pub p: Gvec,
-    pub normal: Gvec,
+    pub p: Cow<'a, Gvec>,
+    pub normal: Cow<'a, Gvec>,
 }
 
 pub trait Hitable {
     fn hit(&self, ray: &Ray, tmin: f32, tmax: f32) -> Option<HitRecord>;
 }
 
-impl HitRecord {
-    pub fn new(is_hit: bool, t: f32, p: Gvec, normal: Gvec) -> Self {
+impl<'a> HitRecord<'a> {
+    pub fn new(is_hit: bool, t: f32, p: Cow<'a, Gvec>, normal: Cow<'a, Gvec>) -> Self {
         Self {
             is_hit,
             t,
