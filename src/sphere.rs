@@ -1,17 +1,17 @@
 use crate::{dot, gvec::Gvec, ray::Ray, HitRecord, Hitable};
 
-pub struct Sphere {
+pub struct Sphere<'a> {
     pub radius: f32,
-    pub center: Gvec,
+    pub center: &'a Gvec,
 }
 
-impl Sphere {
-    pub fn new(radius: f32, center: Gvec) -> Self {
+impl<'a> Sphere<'a> {
+    pub fn new(radius: f32, center: &'a Gvec) -> Self {
         Self { radius, center }
     }
 }
 
-impl Hitable for Sphere {
+impl<'a> Hitable for Sphere<'a> {
     fn hit(&self, ray: &Ray, t_min: f32, t_max: f32) -> Option<HitRecord> {
         let oc = ray.origin - self.center;
 
@@ -29,12 +29,9 @@ impl Hitable for Sphere {
             if (temp < t_max) && (temp > t_min) {
                 let p = ray.point_at_parameter(temp);
 
-                return Some(HitRecord::new(
-                    true,
-                    temp,
-                    p,
-                    (p - self.center) / self.radius,
-                ));
+                let normal = (&p - self.center) / self.radius;
+
+                return Some(HitRecord::new(true, temp, p, normal));
             }
 
             let temp = (-b + discriminant.sqrt()) / a;
@@ -42,12 +39,9 @@ impl Hitable for Sphere {
             if (temp < t_max) && (temp > t_min) {
                 let p = ray.point_at_parameter(temp);
 
-                return Some(HitRecord::new(
-                    true,
-                    temp,
-                    p,
-                    (p - self.center) / self.radius,
-                ));
+                let normal = (&p - self.center) / self.radius;
+
+                return Some(HitRecord::new(true, temp, p, normal));
             }
         }
 

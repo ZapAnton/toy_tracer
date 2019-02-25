@@ -47,8 +47,8 @@ fn main() -> io::Result<()> {
     write!(&mut output_file, "P3\n{} {}\n255\n", NX, NY)?;
 
     let world = [
-        Sphere::new(0.5, Gvec(0.0, 0.0, -1.0)),
-        Sphere::new(100.0, Gvec(0.0, -100.5, -1.0)),
+        Sphere::new(0.5, &Gvec(0.0, 0.0, -1.0)),
+        Sphere::new(100.0, &Gvec(0.0, -100.5, -1.0)),
     ];
 
     for j in (0..NY).rev() {
@@ -57,15 +57,17 @@ fn main() -> io::Result<()> {
 
             let v = j as f32 / NY as f32;
 
-            let ray = Ray::new(ORIGIN, LOWER_LEFT_CORNER + u * HORIZONTAL + v * VERTICAL);
+            let ray_direction = LOWER_LEFT_CORNER + u * HORIZONTAL + v * VERTICAL;
+
+            let ray = Ray::new(&ORIGIN, &ray_direction);
 
             let col = color(&ray, &world);
 
-            let ir = (255.99 * col.0) as i32;
+            let ir = (255.99 * col.0) as u32;
 
-            let ig = (255.99 * col.1) as i32;
+            let ig = (255.99 * col.1) as u32;
 
-            let ib = (255.99 * col.2) as i32;
+            let ib = (255.99 * col.2) as u32;
 
             writeln!(&mut output_file, "{} {} {}", ir, ig, ib)?;
         }
