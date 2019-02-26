@@ -5,7 +5,11 @@ pub struct Gvec(pub f32, pub f32, pub f32);
 
 impl Gvec {
     pub fn length(&self) -> f32 {
-        (self.0.powi(2) + self.1.powi(2) + self.2.powi(2)).sqrt()
+        (self.squared_length()).sqrt()
+    }
+
+    pub fn squared_length(&self) -> f32 {
+        self.0.powi(2) + self.1.powi(2) + self.2.powi(2)
     }
 
     pub fn unit(&self) -> Self {
@@ -41,6 +45,14 @@ impl Sub for &Gvec {
     type Output = Gvec;
 
     fn sub(self, other: Self) -> Self::Output {
+        Gvec(self.0 - other.0, self.1 - other.1, self.2 - other.2)
+    }
+}
+
+impl Sub<&Gvec> for Gvec {
+    type Output = Gvec;
+
+    fn sub(self, other: &Gvec) -> Gvec {
         Gvec(self.0 - other.0, self.1 - other.1, self.2 - other.2)
     }
 }

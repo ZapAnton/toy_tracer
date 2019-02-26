@@ -1,4 +1,5 @@
 use std::{
+    borrow::Borrow,
     fs::File,
     io::{self, BufWriter, Write},
 };
@@ -13,11 +14,24 @@ const NX: i32 = 200;
 const NY: i32 = 100;
 const NS: i32 = 100;
 
+fn unit_sphere_random_point() -> Gvec {
+    let mut rng = rand::thread_rng();
+
+    loop {
+        let point =
+            2.0 * Gvec(rng.gen::<f32>(), rng.gen::<f32>(), rng.gen::<f32>()) - Gvec(1.0, 1.0, 1.0);
+
+        if point.squared_length() < 1.0 {
+            return point;
+        }
+    }
+}
+
 fn color<T: Hitable>(ray: &Ray, world: &[T]) -> Gvec {
     let (hit_record, _) = world.iter().fold(
         (Option::default(), std::f32::MAX),
         |(hit_record, closest), item| {
-            if let Some(temp_record) = item.hit(ray, 0.0, closest) {
+            if let Some(temp_record) = item.hit(ray, 0.001, closest) {
                 let closest = temp_record.t;
 
                 (Some(temp_record), closest)
@@ -28,11 +42,15 @@ fn color<T: Hitable>(ray: &Ray, world: &[T]) -> Gvec {
     );
 
     if let Some(hit_record) = hit_record {
-        0.5 * Gvec(
-            hit_record.normal.0 + 1.0,
-            hit_record.normal.1 + 1.0,
-            hit_record.normal.2 + 1.0,
-        )
+        let target: Gvec = hit_record.p.borrow() as &Gvec
+            + hit_record.normal.borrow()
+            + unit_sphere_random_point();
+
+        let direction = target - hit_record.p.borrow();
+
+        let ray = Ray::new(&hit_record.p, &direction);
+
+        0.5 * color(&ray, world)
     } else {
         let unit_direction = ray.direction.unit();
 
@@ -75,11 +93,11 @@ fn main() -> io::Result<()> {
                 .fold(Gvec(0.0, 0.0, 0.0), |sum, color| sum + color)
                 / (NS as f32);
 
-            let ir = (255.99 * col.0) as u32;
+            let ir = (255.99 * col.0.sqrt()) as u32;
 
-            let ig = (255.99 * col.1) as u32;
+            let ig = (255.99 * col.1.sqrt()) as u32;
 
-            let ib = (255.99 * col.2) as u32;
+            let ib = (255.99 * col.2.sqrt()) as u32;
 
             writeln!(&mut output_file, "{} {} {}", ir, ig, ib)?;
         }
