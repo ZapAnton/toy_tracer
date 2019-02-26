@@ -3,7 +3,7 @@ use std::{
     io::{self, BufWriter, Write},
 };
 
-use toy_tracer::{gvec::Gvec, ray::Ray, sphere::Sphere, HitRecord, Hitable};
+use toy_tracer::{gvec::Gvec, ray::Ray, sphere::Sphere, Hitable};
 
 const OUTPUT_FILE_PATH: &str = "out/test.ppm";
 
@@ -15,16 +15,18 @@ const VERTICAL: Gvec = Gvec(0.0, 2.0, 0.0);
 const ORIGIN: Gvec = Gvec(0.0, 0.0, 0.0);
 
 fn color<T: Hitable>(ray: &Ray, world: &[T]) -> Gvec {
-    let mut hit_record: Option<HitRecord> = Option::default();
+    let (hit_record, _) = world.iter().fold(
+        (Option::default(), std::f32::MAX),
+        |(hit_record, closest), item| {
+            if let Some(temp_record) = item.hit(ray, 0.0, closest) {
+                let closest = temp_record.t;
 
-    let mut closest = std::f32::MAX;
-
-    for item in world.iter() {
-        if let Some(temp_record) = item.hit(ray, 0.0, closest) {
-            closest = temp_record.t;
-            hit_record = Some(temp_record);
-        }
-    }
+                (Some(temp_record), closest)
+            } else {
+                (hit_record, closest)
+            }
+        },
+    );
 
     if let Some(hit_record) = hit_record {
         0.5 * Gvec(
