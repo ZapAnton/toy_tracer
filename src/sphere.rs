@@ -18,7 +18,7 @@ impl<'a> Hitable for Sphere<'a> {
 
         let a = dot(&ray.direction, &ray.direction);
 
-        let b = 2.0 * dot(&oc, &ray.direction);
+        let b = dot(&oc, &ray.direction);
 
         let c = dot(&oc, &oc) - self.radius.powi(2);
 
