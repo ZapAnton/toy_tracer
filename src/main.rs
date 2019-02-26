@@ -3,16 +3,15 @@ use std::{
     io::{self, BufWriter, Write},
 };
 
-use toy_tracer::{gvec::Gvec, ray::Ray, sphere::Sphere, Hitable};
+use rand::{self, Rng};
+
+use toy_tracer::{camera::Camera, gvec::Gvec, ray::Ray, sphere::Sphere, Hitable};
 
 const OUTPUT_FILE_PATH: &str = "out/test.ppm";
 
 const NX: i32 = 200;
 const NY: i32 = 100;
-const LOWER_LEFT_CORNER: Gvec = Gvec(-2.0, -1.0, -1.0);
-const HORIZONTAL: Gvec = Gvec(4.0, 0.0, 0.0);
-const VERTICAL: Gvec = Gvec(0.0, 2.0, 0.0);
-const ORIGIN: Gvec = Gvec(0.0, 0.0, 0.0);
+const NS: i32 = 100;
 
 fn color<T: Hitable>(ray: &Ray, world: &[T]) -> Gvec {
     let (hit_record, _) = world.iter().fold(
@@ -53,17 +52,28 @@ fn main() -> io::Result<()> {
         Sphere::new(100.0, &Gvec(0.0, -100.5, -1.0)),
     ];
 
+    let camera = Camera::default();
+
+    let mut rng = rand::thread_rng();
+
     for j in (0..NY).rev() {
         for i in 0..NX {
-            let u = i as f32 / NX as f32;
+            let col: Gvec = (0..NS)
+                .map(|_| {
+                    let u = (i as f32 + rng.gen::<f32>()) / NX as f32;
 
-            let v = j as f32 / NY as f32;
+                    let v = (j as f32 + rng.gen::<f32>()) / NY as f32;
 
-            let ray_direction = LOWER_LEFT_CORNER + u * HORIZONTAL + v * VERTICAL;
+                    let ray_direction = camera.lower_left_corner - camera.origin
+                        + u * camera.horizontal
+                        + v * camera.vertical;
 
-            let ray = Ray::new(&ORIGIN, &ray_direction);
+                    let ray = Ray::new(camera.origin, &ray_direction);
 
-            let col = color(&ray, &world);
+                    color(&ray, &world)
+                })
+                .fold(Gvec(0.0, 0.0, 0.0), |sum, color| sum + color)
+                / (NS as f32);
 
             let ir = (255.99 * col.0) as u32;
 

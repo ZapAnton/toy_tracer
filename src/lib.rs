@@ -1,3 +1,4 @@
+pub mod camera;
 pub mod gvec;
 pub mod ray;
 pub mod sphere;
