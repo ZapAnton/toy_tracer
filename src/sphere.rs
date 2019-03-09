@@ -1,14 +1,15 @@
-use crate::{dot, gvec::Gvec, ray::Ray, HitRecord, Hitable};
+use crate::{dot, gvec::Gvec, ray::Ray, material::Material, HitRecord, Hitable};
 use std::borrow::Cow;
 
 pub struct Sphere<'a> {
     pub radius: f32,
     pub center: &'a Gvec,
+    pub material: Material
 }
 
 impl<'a> Sphere<'a> {
-    pub fn new(radius: f32, center: &'a Gvec) -> Self {
-        Self { radius, center }
+    pub fn new(radius: f32, center: &'a Gvec, material: Material) -> Self {
+        Self { radius, center, material }
     }
 }
 
@@ -37,6 +38,7 @@ impl<'a> Hitable for Sphere<'a> {
                     temp,
                     Cow::Owned(p),
                     Cow::Owned(normal),
+                    self.material,
                 ));
             }
 
@@ -52,6 +54,7 @@ impl<'a> Hitable for Sphere<'a> {
                     temp,
                     Cow::Owned(p),
                     Cow::Owned(normal),
+                    self.material,
                 ));
             }
         }

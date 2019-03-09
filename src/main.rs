@@ -4,9 +4,9 @@ use std::{
     io::{self, BufWriter, Write},
 };
 
-use rand::{self, Rng};
-
 use toy_tracer::{camera::Camera, gvec::Gvec, ray::Ray, sphere::Sphere, Hitable};
+
+use rand::{self, Rng};
 
 const OUTPUT_FILE_PATH: &str = "out/test.ppm";
 
@@ -14,20 +14,7 @@ const NX: i32 = 200;
 const NY: i32 = 100;
 const NS: i32 = 100;
 
-fn unit_sphere_random_point() -> Gvec {
-    let mut rng = rand::thread_rng();
-
-    loop {
-        let point =
-            2.0 * Gvec(rng.gen::<f32>(), rng.gen::<f32>(), rng.gen::<f32>()) - Gvec(1.0, 1.0, 1.0);
-
-        if point.squared_length() < 1.0 {
-            return point;
-        }
-    }
-}
-
-fn color<T: Hitable>(ray: &Ray, world: &[T]) -> Gvec {
+fn color<T: Hitable>(ray: &Ray, world: &[T], depth: i32) -> Gvec {
     let (hit_record, _) = world.iter().fold(
         (Option::default(), std::f32::MAX),
         |(hit_record, closest), item| {
@@ -42,15 +29,22 @@ fn color<T: Hitable>(ray: &Ray, world: &[T]) -> Gvec {
     );
 
     if let Some(hit_record) = hit_record {
+        /*
         let target: Gvec = hit_record.p.borrow() as &Gvec
             + hit_record.normal.borrow()
-            + unit_sphere_random_point();
+            + toy_tracer::unit_sphere_random_point();
 
         let direction = target - hit_record.p.borrow();
 
         let ray = Ray::new(&hit_record.p, &direction);
 
         0.5 * color(&ray, world)
+        */
+        if let Some(scattered_ray) = hit_record.material.scatter(ray, hit_record) && depth < 50 {
+            scattered_ray.attenuation * color(scattered_ray.ray, world, depth + 1)
+        } else {
+            Gvec(0.0, 0.0, 0.0)
+        }
     } else {
         let unit_direction = ray.direction.unit();
 
