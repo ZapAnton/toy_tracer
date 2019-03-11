@@ -1,16 +1,32 @@
 use crate::gvec::Gvec;
 
+#[derive(Default, Clone)]
+pub struct Material {
+    pub diffuse_color: Gvec,
+}
+
+impl Material {
+    pub fn new(diffuse_color: Gvec) -> Self {
+        Self { diffuse_color }
+    }
+}
+
 pub struct Sphere {
     pub radius: f32,
     pub center: Gvec,
+    pub material: Material,
 }
 
 impl Sphere {
-    pub fn new(center: Gvec, radius: f32) -> Self {
-        Sphere { center, radius }
+    pub fn new(center: Gvec, radius: f32, material: Material) -> Self {
+        Self {
+            center,
+            radius,
+            material,
+        }
     }
 
-    pub fn intersects_ray(&self, origin: &Gvec, direction: &Gvec, t0: f32) -> bool {
+    pub fn intersects_ray(&self, origin: &Gvec, direction: &Gvec) -> Option<f32> {
         let L = &self.center - origin;
 
         let tca = &L * direction;
@@ -18,7 +34,7 @@ impl Sphere {
         let d2 = &L * &L - tca.powi(2);
 
         if d2 > self.radius.powi(2) {
-            return false;
+            return None;
         }
 
         let thc = (self.radius.powi(2) - d2).sqrt();
@@ -32,9 +48,9 @@ impl Sphere {
         }
 
         if t0 < 0.0 {
-            false
+            None
         } else {
-            true
+            Some(t0)
         }
     }
 }
