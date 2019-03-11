@@ -25,12 +25,12 @@ fn render(sphere: &Sphere) -> io::Result<()> {
     writeln!(&mut output_file, "P3\n{} {}\n255", WIDTH, HEIGHT)?;
 
     (0..HEIGHT)
-        .flat_map(|height| {
-            (0..WIDTH).map(move |width| {
-                let x = (2.0 * (width as f32 + 0.5) / WIDTH as f32 - 1.0)
-                    * ((FOV / 2.0) * WIDTH as f32 / HEIGHT as f32).tan();
+        .flat_map(|j| {
+            (0..WIDTH).map(move |i| {
+                let x = (2.0 * (i as f32 + 0.5) / WIDTH as f32 - 1.0)
+                    * (FOV / 2.0).tan() * WIDTH as f32 / HEIGHT as f32;
 
-                let y = (2.0 * (height as f32 + 0.5) / HEIGHT as f32 - 1.0) * (FOV / 2.0).tan();
+                let y = -(2.0 * (j as f32 + 0.5) / HEIGHT as f32 - 1.0) * (FOV / 2.0).tan();
 
                 let direction = Gvec(x, y, -1.0).normalize();
 
