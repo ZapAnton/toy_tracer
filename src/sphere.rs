@@ -1,13 +1,43 @@
 use crate::gvec::Gvec;
 
-#[derive(Default, Clone)]
+#[derive(Clone)]
 pub struct Material {
     pub diffuse_color: Gvec,
+    pub albedo: [f32; 2],
+    pub specular_exponent: f32,
+}
+
+pub struct Light {
+    pub position: Gvec,
+    pub intensity: f32,
 }
 
 impl Material {
-    pub fn new(diffuse_color: Gvec) -> Self {
-        Self { diffuse_color }
+    pub fn new(albedo: [f32; 2], diffuse_color: Gvec, specular_exponent: f32) -> Self {
+        Self {
+            albedo,
+            diffuse_color,
+            specular_exponent,
+        }
+    }
+}
+
+impl Default for Material {
+    fn default() -> Self {
+        Self {
+            albedo: [1.0, 0.0],
+            diffuse_color: Gvec::default(),
+            specular_exponent: f32::default(),
+        }
+    }
+}
+
+impl Light {
+    pub fn new(position: Gvec, intensity: f32) -> Self {
+        Self {
+            position,
+            intensity,
+        }
     }
 }
 
@@ -27,11 +57,11 @@ impl Sphere {
     }
 
     pub fn intersects_ray(&self, origin: &Gvec, direction: &Gvec) -> Option<f32> {
-        let L = &self.center - origin;
+        let l = &self.center - origin;
 
-        let tca = &L * direction;
+        let tca = &l * direction;
 
-        let d2 = &L * &L - tca.powi(2);
+        let d2 = &l * &l - tca.powi(2);
 
         if d2 > self.radius.powi(2) {
             return None;
@@ -41,10 +71,8 @@ impl Sphere {
 
         let mut t0 = tca - thc;
 
-        let t1 = tca + thc;
-
         if t0 < 0.0 {
-            t0 = t1;
+            t0 = tca + thc;
         }
 
         if t0 < 0.0 {
