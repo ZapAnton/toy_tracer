@@ -12,7 +12,7 @@ impl Gvec {
         self.0.powi(2) + self.1.powi(2) + self.2.powi(2)
     }
 
-    pub fn unit(&self) -> Self {
+    pub fn normalize(&self) -> Self {
         self / self.length()
     }
 }
@@ -110,5 +110,13 @@ impl Mul<&Gvec> for f32 {
 
     fn mul(self, rhs: &Gvec) -> Self::Output {
         Gvec(self * rhs.0, self * rhs.1, self * rhs.2)
+    }
+}
+
+impl Mul<&Gvec> for &Gvec {
+    type Output = f32;
+
+    fn mul(self, rhs: &Gvec) -> Self::Output {
+        self.0 * rhs.0 + self.1 * rhs.1 + self.2 * rhs.2
     }
 }
